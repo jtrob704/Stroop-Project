@@ -11790,11 +11790,9 @@ div#notebook {
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">statsmodels.api</span> <span class="k">as</span> <span class="nn">sm</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
 <span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">chained_assignment</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="o">%</span><span class="k">matplotlib</span> inline
-<span class="c1">#We are setting the seed to assure you get the same answers on quizzes as we set up</span>
-<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -11925,7 +11923,7 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <ul>
-<li>The dependent variable is whether the response is congruent or incongruent. The independent variable is the response time.</li>
+<li>The dependent variable is the response time. The independent variable is whether the response is congruent or incongruent. </li>
 </ul>
 
 </div>
@@ -11952,7 +11950,7 @@ div#notebook {
 <ul>
 <li><strong>$H_{1}$</strong>: <strong>$\mu_{c}$</strong> - <strong>$\mu_{i}$</strong> <strong>$&gt;$</strong> 0 </li>
 </ul>
-<p>An Ordinary Least Squares(OLS) statistical test test can be used to predict whether there are differences in response time between the congruent and incongruent groups using an intercept. The OLS test assumes a linear relationship exists between the dependent and inpendent variables.</p>
+<p>A 2-sample t-test can be used to can be used to test the hypothesis. The t-test is the optimal test for the data due to the small sample size and the t-test tests for differences across populations.</p>
 
 </div>
 </div>
@@ -12184,11 +12182,11 @@ Standard deviation - 3.56(congruent) 4.80(incogruent)
 <div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Perform OLS statistical test</span>
-<span class="n">df</span><span class="p">[</span><span class="s1">&#39;intercept&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="n">log_mod</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Incongruent&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;intercept&#39;</span><span class="p">,</span> <span class="s1">&#39;Congruent&#39;</span><span class="p">]])</span>
-<span class="n">results</span> <span class="o">=</span> <span class="n">log_mod</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
-<span class="n">results</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Perform t-test using SciPy stats</span>
+<span class="n">tstat</span><span class="p">,</span> <span class="n">pvalue</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">ttest_rel</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Incongruent&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Congruent&#39;</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;t-statistic: &#39;</span><span class="p">,</span> <span class="n">tstat</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;p-value: &#39;</span><span class="p">,</span> <span class="n">pvalue</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;t-critical: &#39;</span><span class="p">,</span> <span class="n">stats</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mi">23</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -12201,68 +12199,15 @@ Standard deviation - 3.56(congruent) 4.80(incogruent)
 
 <div class="output_area">
 
-<div class="prompt output_prompt">Out[7]:</div>
+<div class="prompt"></div>
 
 
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<table class="simpletable">
-<caption>OLS Regression Results</caption>
-<tr>
-  <th>Dep. Variable:</th>       <td>Incongruent</td>   <th>  R-squared:         </th> <td>   0.124</td>
-</tr>
-<tr>
-  <th>Model:</th>                   <td>OLS</td>       <th>  Adj. R-squared:    </th> <td>   0.084</td>
-</tr>
-<tr>
-  <th>Method:</th>             <td>Least Squares</td>  <th>  F-statistic:       </th> <td>   3.108</td>
-</tr>
-<tr>
-  <th>Date:</th>             <td>Tue, 09 Oct 2018</td> <th>  Prob (F-statistic):</th>  <td>0.0918</td> 
-</tr>
-<tr>
-  <th>Time:</th>                 <td>19:39:45</td>     <th>  Log-Likelihood:    </th> <td> -69.590</td>
-</tr>
-<tr>
-  <th>No. Observations:</th>      <td>    24</td>      <th>  AIC:               </th> <td>   143.2</td>
-</tr>
-<tr>
-  <th>Df Residuals:</th>          <td>    22</td>      <th>  BIC:               </th> <td>   145.5</td>
-</tr>
-<tr>
-  <th>Df Model:</th>              <td>     1</td>      <th>                     </th>     <td> </td>   
-</tr>
-<tr>
-  <th>Covariance Type:</th>      <td>nonrobust</td>    <th>                     </th>     <td> </td>   
-</tr>
-</table>
-<table class="simpletable">
-<tr>
-      <td></td>         <th>coef</th>     <th>std err</th>      <th>t</th>      <th>P>|t|</th>  <th>[0.025</th>    <th>0.975]</th>  
-</tr>
-<tr>
-  <th>intercept</th> <td>   15.3535</td> <td>    3.894</td> <td>    3.943</td> <td> 0.001</td> <td>    7.278</td> <td>   23.429</td>
-</tr>
-<tr>
-  <th>Congruent</th> <td>    0.4742</td> <td>    0.269</td> <td>    1.763</td> <td> 0.092</td> <td>   -0.084</td> <td>    1.032</td>
-</tr>
-</table>
-<table class="simpletable">
-<tr>
-  <th>Omnibus:</th>       <td>15.513</td> <th>  Durbin-Watson:     </th> <td>   1.992</td>
-</tr>
-<tr>
-  <th>Prob(Omnibus):</th> <td> 0.000</td> <th>  Jarque-Bera (JB):  </th> <td>  15.580</td>
-</tr>
-<tr>
-  <th>Skew:</th>          <td> 1.593</td> <th>  Prob(JB):          </th> <td>0.000414</td>
-</tr>
-<tr>
-  <th>Kurtosis:</th>      <td> 5.330</td> <th>  Cond. No.          </th> <td>    60.4</td>
-</tr>
-</table><br/><br/>Warnings:<br/>[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>t-statistic:  8.020706944109957
+p-value:  4.103000585711178e-08
+t-critical:  1.7138715277470473
+</pre>
 </div>
-
 </div>
 
 </div>
@@ -12274,7 +12219,7 @@ Standard deviation - 3.56(congruent) 4.80(incogruent)
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <ul>
-<li>The Ordinary Least Squares(OLS) statistical test predicts that the incongruent reponses took 15.3535 + .4742 seconds longer than congruent responses. For every second that passes an incongruent response takes .4742 seconds longer. The low p-values indicate that the results are statistically significant. Based on the result of the OLS test we can reject the null hypothesis that assumed that there is no significant difference between the congruent and incongruent groups.The results matched my expectations that were based on the significant difference in mean values of the congruent and incongruent groups.</li>
+<li>The 2-sample t-test shows a t-statistic value of 8.021 which is significantly higher than the t-critical value of 1.714 for the chosen <strong>$\alpha$</strong> of 0.05.  Based on the result of the 2-sample t-test we can reject the null hypothesis that assumed that there is no significant difference between the congruent and incongruent groups with 95% confidence.The results matched my expectations that were based on the significant difference in mean values of the congruent and incongruent groups.</li>
 </ul>
 
 </div>
